@@ -1,0 +1,824 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>parcial</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-12"><meta name="DC.source" content="parcial.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Parcial Ariadna Cort&eacute;s</a></li><li><a href="#2">Equilibrium position for charges</a></li><li><a href="#3">Auxiliar codes</a></li></ul></div><h2 id="1">Parcial Ariadna Cort&eacute;s</h2><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+format <span class="string">long</span>;
+</pre><h2 id="2">Equilibrium position for charges</h2><pre class="codeinput"><span class="comment">% plot the surface</span>
+r_sample = surface(linspace(0,2*pi,200));
+figure(1)
+plot(r_sample(1,:), r_sample(2,:),<span class="string">'-k'</span>, <span class="string">'linewidth'</span>,1);
+hold <span class="string">on</span>
+
+<span class="comment">% We will do a newton solving for (sigma1, sigma2, sigma3)</span>
+<span class="comment">% initial guess</span>
+x0 = [pi; pi/2; 3*pi/2];
+
+<span class="comment">% call the newton with epsilon tolerance and the Dots function</span>
+[xk,resd,it] = newtonn(x0,eps,50, @dots);
+
+<span class="comment">% The result is the last iteration of the newton</span>
+x = xk(end-2:end)
+
+<span class="comment">% We plot the results</span>
+r_result = surface(x); <span class="comment">% (x,y) position of the result</span>
+plot(r_result(1,:), r_result(2,:),<span class="string">'or'</span>, <span class="string">'linewidth'</span>,1)
+title(<span class="string">'Equilibrium positions for $q_1$, $q_2$, $q_3$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+xlabel(<span class="string">'$x$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+xlabel(<span class="string">'$y$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><h2 id="3">Auxiliar codes</h2><pre class="codeinput"><span class="keyword">function</span> r = surface(sigmas)
+    <span class="comment">% Input: sigma scalar</span>
+    <span class="comment">% Output: position in the surface at that sigma</span>
+    x = exp(cos(sigmas));
+    y = exp(sin(sigmas));
+    r = [x; y]
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> d = gradSurface(sigma)
+    <span class="comment">% Input: sigma(scalar to evaluate the parcial derivative at</span>
+    <span class="comment">% output: d -&gt; partial derivatives evaluated at sigma</span>
+    x = -sin(sigma)*exp(cos(sigma));
+    y = cos(sigma)*exp(sin(sigma));
+    d = [x; y];
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> F = coulomb(sigma1, sigma2)
+    <span class="comment">% Input: the positions of two particles</span>
+    <span class="comment">% output: F the force between them</span>
+    c1 = exp(cos(sigma1)); c2 = exp(cos(sigma2));
+    s1 = exp(sin(sigma1)); s2 = exp(sin(sigma2));
+    d = sqrt((c1-c2)^2+(s1-s2)^2);
+    d3 = d^3;
+
+    F = [c1-c2, s1-s2];
+    F = F/d3;
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> y = dots(sigma)
+    <span class="comment">% Input: vector of sigmas (size 3)</span>
+    <span class="comment">% Output: for each particle in sigma evaluate scalar product between</span>
+    <span class="comment">% the force acting on it and the gradient of the surface</span>
+
+    F1 = coulomb(sigma(1),sigma(2)) + coulomb(sigma(1), sigma(3));
+    F2 = coulomb(sigma(2),sigma(1)) + coulomb(sigma(2), sigma(3));
+    F3 = coulomb(sigma(3),sigma(1)) + coulomb(sigma(3), sigma(2));
+    Dot1 = dot(F1, gradSurface(sigma(1)));
+    Dot2 = dot(F2, gradSurface(sigma(2)));
+    Dot3 = dot(F3, gradSurface(sigma(3)));
+    y = [Dot1; Dot2; Dot3];
+<span class="keyword">end</span>
+
+
+<span class="comment">% Codes from class</span>
+<span class="comment">% Code 20: Newtonis method for n-dimensional systems</span>
+<span class="comment">% Input: x0 - initial guess (column vector)</span>
+<span class="comment">%        tol - tolerance so that ||x_{k+1} - x_{k} || &lt; tol</span>
+<span class="comment">%        itmax - max number of iterations</span>
+<span class="comment">%        fun - function&#8217;s name</span>
+<span class="comment">% Output:   XK - iterated</span>
+<span class="comment">%           resd: resulting residuals of iteration: ||F_k||</span>
+<span class="comment">%           it:   number of required iterations to satisfy tolerance</span>
+<span class="keyword">function</span> [XK,resd,it] = newtonn(x0,tol,itmax,fun)
+    xk = [x0];
+    resd = [norm(feval(fun,xk))];
+    XK = [x0];
+    it = 1;
+
+    tolk = 1.0;
+    n = length(x0);
+
+    <span class="keyword">while</span> it &lt; itmax &amp;&amp; tolk &gt; tol
+        Fk = feval(fun, xk);
+
+        DFk = jac(fun, xk);
+        [P,L,U] = pplu(DFk);
+
+        dxk = plusolve(L,U,P,-Fk);
+
+        xk = xk + dxk;
+        XK = [XK xk];
+        resd = [resd norm(Fk)];
+        tolk = norm(XK(:, end)-XK(:, end-1));
+        it = it + 1;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Code 13: PA = LU factorization (partial pivoting)</span>
+<span class="comment">% Input: A (non-singular square matrix)</span>
+<span class="comment">% Output: L (unit lower triangular matrix)</span>
+<span class="comment">%         U (upper triangular matrix)</span>
+<span class="comment">%         P (reordering vector)</span>
+<span class="keyword">function</span> [P, L, U] = pplu(A)
+    [m,n] = size(A);
+
+    <span class="keyword">if</span> m~=n
+           error(<span class="string">'not square matrix'</span>);
+    <span class="keyword">end</span>
+
+    U = A;
+    L = eye(n);
+
+    P = [1:n]';
+
+    <span class="keyword">for</span> k = 1:n-1
+        [~, imax] = max(abs(U(k:end,k)));
+        imax = imax+k-1;
+        i1 = [k, imax];
+        i2 = [imax, k];
+
+        U(i1,:) = U(i2,:); <span class="comment">% Column k will be column imax and column imax will be column k</span>
+        P(k) = imax;
+
+        L(i1,1:k-1) = L(i2, 1:k-1);
+
+        <span class="keyword">for</span> jj = [k+1:n]
+            L(jj, k) = U(jj, k)/U(k, k);
+            U(jj, k:n) = U(jj, k:n) - L(jj, k)*U(k,k:n);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Code 14: PA = LU (Solver for Ax = b)</span>
+<span class="comment">% Input:    L (unit lower triangular matrix)</span>
+<span class="comment">%           U (upper triangular matrix)</span>
+<span class="comment">%           P (reordering vector)</span>
+<span class="comment">%           b (right-hand side)</span>
+<span class="comment">% Output:   solution x</span>
+<span class="keyword">function</span> x = plusolve(L, U, P, b)
+    n = length(b);
+    <span class="keyword">for</span> k = 1:n-1
+        b([k P(k)]) = b([P(k) k]);
+    <span class="keyword">end</span>
+    y = fs(L, b);
+    x = bs(U, y);
+<span class="keyword">end</span>
+
+<span class="comment">% Code 19: Computation of the Jacobian J</span>
+<span class="comment">% Input:   F(x) : R^m ---&gt; R^n</span>
+<span class="comment">%          x : (m x 1)-vector ; F: (n x 1)-vector</span>
+<span class="comment">% Output: DF(x) (n x m) Jacobian matrix at x</span>
+<span class="keyword">function</span> DF = jac(F,x)
+    f1 = feval(F,x);
+    n = length(f1);
+    m = length(x);
+
+    DF = zeros(n,m);
+    H = sqrt(eps)*eye(m);
+
+    <span class="keyword">for</span> j = 1:m
+        f2 = feval(F,x+H(:,j));
+        DF(:,j) = (f2 - f1)/H(j,j);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Code 12: Backward Substitution for Upper Triangular Systems</span>
+<span class="comment">% Input:    U: Upp. Triangular non-singular square matrix</span>
+<span class="comment">%           b: column right-hand side</span>
+<span class="comment">% Output:   x: solution of Ux=b</span>
+<span class="keyword">function</span> x = bs(U, b)
+    x = 0*b;
+    n = length(b);
+    x(n) = b(n)/U(n,n);
+
+    <span class="keyword">for</span> ii = n-1:-1:1
+        x(ii) = (b(ii)-U(ii, ii+1:n)*x(ii+1:n))/U(ii,ii);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Code 11: Forward Substitution for Lower Triangular Systems</span>
+<span class="comment">% Input:    L: Low Triangular non-singular square matrix</span>
+<span class="comment">%           b: column right-hand side</span>
+<span class="comment">% Output:   x: solution of Lx=b</span>
+<span class="keyword">function</span> x = fs(L, b)
+    x = 0*b;
+    n = length(b);
+    x(1) = b(1)/L(1,1);
+
+    <span class="keyword">for</span> ii = 2:n
+        x(ii) = (b(ii)-L(ii, 1:ii-1)*x(1:ii-1))/L(ii,ii);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">
+r =
+
+  Columns 1 through 3
+
+   2.718281828459046   2.716927344810346   2.712869289872053
+   1.000000000000000   1.032072121472006   1.065139345356346
+
+  Columns 4 through 6
+
+   2.706123810051201   2.696717677810775   2.684688086108381
+   1.099196884111956   1.134236463380709   1.170246070037014
+
+  Columns 7 through 9
+
+   2.670082364102893   2.652957617549733   2.633380298182053
+   1.207209703534589   1.245107133038289   1.283913663022467
+
+  Columns 10 through 12
+
+   2.611425707179159   2.587177438542573   2.560726768823043
+   1.323599910195986   1.364131594773287   1.405469349245963
+
+  Columns 13 through 15
+
+   2.532172000160136   2.501617764002957   2.469174293172170
+   1.447568547915373   1.490379160519044   1.533845633317227
+
+  Columns 16 through 18
+
+   2.434956670097751   2.399084059124515   2.361678930721042
+   1.577906800996444   1.622495832689922   1.667540215306768
+
+  Columns 19 through 21
+
+   2.322866285262221   2.282772883787845   2.241526492778211
+   1.712961777199336   1.758676754979097   1.804595906013769
+
+  Columns 22 through 24
+
+   2.199255149542306   2.156086454296007   2.112146894428755
+   1.850624668801928   1.896663373026260   1.942607500634620
+
+  Columns 25 through 27
+
+   2.067561205829857   2.022451775482566   1.976938088848251
+   1.988347998792093   2.033771644991484   2.078761464009578
+
+  Columns 28 through 30
+
+   1.931136224866549   1.885158400702226   1.839112567686757
+   2.123197195759063   2.166955812419164   2.209912082541186
+
+  Columns 31 through 33
+
+   1.793102059242274   1.747225290946708   1.701575512309389
+   2.251939179128659   2.292909327996851   2.332694492035089
+
+  Columns 34 through 36
+
+   1.656240609282543   1.611302956041329   1.566839314127080
+   2.371167086340081   2.408200718572017   2.443670948320280
+
+  Columns 37 through 39
+
+   1.522920776667846   1.479612755068595   1.436975005300533
+   2.477456058764588   2.509437833491970   2.539502330991035
+
+  Columns 40 through 42
+
+   1.395061690714249   1.353921478152860   1.313597664046345
+   2.567540649102094   2.593449671562946   2.617132788761863
+
+  Columns 43 through 45
+
+   1.274128327123572   1.235546504380199   1.197880386984296
+   2.638500584895887   2.657471483936256   2.673972347123383
+
+  Columns 46 through 48
+
+   1.161153532882704   1.125385092984906   1.090590047942762
+   2.687939015149173   2.699316788729531   2.708060841917881
+
+  Columns 49 through 51
+
+   1.056779452708982   1.023960686240065   0.992137703906010
+   2.714136563251786   2.717519820648363   2.718197146856585
+
+  Columns 52 through 54
+
+   0.961311290375335   0.931479310955703   0.902636959584438
+   2.716165843221425   2.711434000499969   2.704020436476424
+
+  Columns 55 through 57
+
+   0.874777001875960   0.847890011842091   0.821964601103704
+   2.693954551134121   2.681276101140766   2.666034896371200
+
+  Columns 58 through 60
+
+   0.796987639606422   0.772944467037246   0.749819094311882
+   2.648290422113542   2.628111391464287   2.605575233201941
+
+  Columns 61 through 63
+
+   0.727594394663174   0.706252284008780   0.685773890410644
+   2.580767521124653   2.553781351434893   2.524716675245124
+
+  Columns 64 through 66
+
+   0.666139712559865   0.647329767328296   0.629323726522848
+   2.493679593656906   2.460781623128127   2.426138938988118
+
+  Columns 67 through 69
+
+   0.612101043060617   0.595641066852984   0.579923150745492
+   2.389871604989073   2.352102796698077   2.312958026342268
+
+  Columns 70 through 72
+
+   0.564926746908422   0.550631494111108   0.537017296342270
+   2.272564376427643   2.231049749068557   2.188542137500318
+
+  Columns 73 through 75
+
+   0.524064393259592   0.511753422965383   0.500065477612250
+   2.145168925712804   2.101056221550763   2.056328227989036
+
+  Columns 76 through 78
+
+   0.488982152344000   0.478485588073302   0.468558508589653
+   2.011106656621067   1.965510186709397   1.919653972449707
+
+  Columns 79 through 81
+
+   0.459184252479574   0.450346800326347   0.442030797639505
+   1.873649200406857   1.827602698403380   1.781616596487597
+
+  Columns 82 through 84
+
+   0.434221573945327   0.426905158449023   0.420068292657808
+   1.735788039988823   1.690208954088463   1.644965858804279
+
+  Columns 85 through 87
+
+   0.413698440331693   0.407783795106170   0.402313286108064
+   1.600139732805715   1.555805924054342   1.512034104897559
+
+  Columns 88 through 90
+
+   0.397276581863041   0.392664092770672   0.388466972400778
+   1.468888268936665   1.426426766742187   1.384702377298868
+
+  Columns 91 through 93
+
+   0.384677117843082   0.381287169321032   0.378290509260142
+   1.343762411927819   1.303648847351294   1.264398484532848
+
+  Columns 94 through 96
+
+   0.375681260981333   0.373454287170464   0.371605188256667
+   1.226043129938164   1.188609795915408   1.152120916983682
+
+  Columns 97 through 99
+
+   0.370130300814049   0.369026696083864   0.368292178697289
+   1.116594578939312   1.082044757837505   1.048481566076437
+
+  Columns 100 through 102
+
+   0.367925285662343   0.367925285662343   0.368292178697289
+   1.015911502997481   0.984337707614754   0.953760211295024
+
+  Columns 103 through 105
+
+   0.369026696083864   0.370130300814049   0.371605188256667
+   0.924176188421749   0.895580203290913   0.867964451698400
+
+  Columns 106 through 108
+
+   0.373454287170464   0.375681260981333   0.378290509260142
+   0.841318995886156   0.815631991715035   0.790889907124071
+
+  Columns 109 through 111
+
+   0.381287169321032   0.384677117843082   0.388466972400778
+   0.767077731117366   0.744179172689730   0.722176849259618
+
+  Columns 112 through 114
+
+   0.392664092770672   0.397276581863041   0.402313286108064
+   0.701052464322370   0.680786974167821   0.661360743624067
+
+  Columns 115 through 117
+
+   0.407783795106169   0.413698440331693   0.420068292657808
+   0.642753690893564   0.624945421639259   0.607915352557467
+
+  Columns 118 through 120
+
+   0.426905158449023   0.434221573945327   0.442030797639505
+   0.591642824741338   0.576107207194745   0.561287990901898
+
+  Columns 121 through 123
+
+   0.450346800326346   0.459184252479574   0.468558508589653
+   0.547164873893880   0.533717837780334   0.520927216233601
+
+  Columns 124 through 126
+
+   0.478485588073302   0.488982152344000   0.500065477612250
+   0.508773755924497   0.497238670414495   0.486303687509041
+
+  Columns 127 through 129
+
+   0.511753422965383   0.524064393259592   0.537017296342270
+   0.475951090571919   0.466163754291619   0.456925175378240
+
+  Columns 130 through 132
+
+   0.550631494111108   0.564926746908422   0.579923150745492
+   0.448219498654161   0.440031538984145   0.432346799471069
+
+  Columns 133 through 135
+
+   0.595641066852983   0.612101043060617   0.629323726522847
+   0.425151486322714   0.418432520773254   0.412177548420650
+
+  Columns 136 through 138
+
+   0.647329767328296   0.666139712559865   0.685773890410643
+   0.406374946318401   0.401013828137211   0.396084047689395
+
+  Columns 139 through 141
+
+   0.706252284008780   0.727594394663174   0.749819094311882
+   0.391576201086334   0.387481627777235   0.383792410695860
+
+  Columns 142 through 144
+
+   0.772944467037246   0.796987639606422   0.821964601103704
+   0.380501375720927   0.377602090635483   0.375088863750854
+
+  Columns 145 through 147
+
+   0.847890011842091   0.874777001875960   0.902636959584437
+   0.372956742341657   0.371201511019929   0.369819690158514
+
+  Columns 148 through 150
+
+   0.931479310955703   0.961311290375335   0.992137703906010
+   0.368808534456530   0.368166031722857   0.367890901937129
+
+  Columns 151 through 153
+
+   1.023960686240064   1.056779452708982   1.090590047942762
+   0.367982596631591   0.368441298621285   0.369267922094316
+
+  Columns 154 through 156
+
+   1.125385092984906   1.161153532882703   1.197880386984296
+   0.370464113058276   0.372032250123243   0.373975445585959
+
+  Columns 157 through 159
+
+   1.235546504380198   1.274128327123571   1.313597664046345
+   0.376297546763812   0.379003137510943   0.382097539832165
+
+  Columns 160 through 162
+
+   1.353921478152860   1.395061690714249   1.436975005300532
+   0.385586815493261   0.389477767508653   0.393777941369226
+
+  Columns 163 through 165
+
+   1.479612755068595   1.522920776667845   1.566839314127079
+   0.398495625854363   0.403639853252800   0.409220398796890
+
+  Columns 166 through 168
+
+   1.611302956041328   1.656240609282543   1.701575512309388
+   0.415247779094164   0.421733249318803   0.428688798903786
+
+  Columns 169 through 171
+
+   1.747225290946708   1.793102059242274   1.839112567686757
+   0.436127145452205   0.444061726563561   0.452506689248061
+
+  Columns 172 through 174
+
+   1.885158400702225   1.931136224866548   1.976938088848250
+   0.461476876579044   0.470987811211050   0.481055675368914
+
+  Columns 175 through 177
+
+   2.022451775482565   2.067561205829856   2.112146894428754
+   0.491697286891905   0.502930070896791   0.514772026605125
+
+  Columns 178 through 180
+
+   2.156086454296006   2.199255149542307   2.241526492778211
+   0.527241688863548   0.540358083871965   0.554140678623688
+
+  Columns 181 through 183
+
+   2.282772883787845   2.322866285262221   2.361678930721042
+   0.568609323554678   0.583784187896465   0.599685687230059
+
+  Columns 184 through 186
+
+   2.399084059124514   2.434956670097751   2.469174293172169
+   0.616334402746729   0.633750991736966   0.651956088851857
+
+  Columns 187 through 189
+
+   2.501617764002956   2.532172000160136   2.560726768823043
+   0.670970197712464   0.690813572483381   0.711506089077291
+
+  Columns 190 through 192
+
+   2.587177438542572   2.611425707179159   2.633380298182053
+   0.733067105718782   0.755515312668713   0.778868570995572
+
+  Columns 193 through 195
+
+   2.652957617549733   2.670082364102892   2.684688086108381
+   0.803143740378241   0.828356496035527   0.854521135002291
+
+  Columns 196 through 198
+
+   2.696717677810775   2.706123810051201   2.712869289872052
+   0.881650372109706   0.909755126178239   0.938844297095649
+
+  Columns 199 through 200
+
+   2.716927344810346   2.718281828459046
+   0.968924534628198   1.000000000000000
+
+
+x =
+
+   3.926990816987241  -0.082065999145743   7.936047633120226
+
+
+r =
+
+   0.493068691395240   2.709148761445171   0.921295991839077
+   0.493068691395240   0.921295991839078   2.709148761445171
+
+</pre><img vspace="5" hspace="5" src="parcial_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Parcial Ariadna Cortés
+clear all; 
+close all;
+format long;
+
+%% Equilibrium position for charges
+
+% plot the surface
+r_sample = surface(linspace(0,2*pi,200));
+figure(1)
+plot(r_sample(1,:), r_sample(2,:),'-k', 'linewidth',1);
+hold on
+
+% We will do a newton solving for (sigma1, sigma2, sigma3)
+% initial guess
+x0 = [pi; pi/2; 3*pi/2];
+
+% call the newton with epsilon tolerance and the Dots function
+[xk,resd,it] = newtonn(x0,eps,50, @dots);
+
+% The result is the last iteration of the newton
+x = xk(end-2:end)
+
+% We plot the results
+r_result = surface(x); % (x,y) position of the result
+plot(r_result(1,:), r_result(2,:),'or', 'linewidth',1)
+title('Equilibrium positions for $q_1$, $q_2$, $q_3$', 'Interpreter', 'latex')
+xlabel('$x$', 'Interpreter', 'latex')
+xlabel('$y$', 'Interpreter', 'latex')
+
+
+%% Auxiliar codes
+function r = surface(sigmas)
+    % Input: sigma scalar 
+    % Output: position in the surface at that sigma
+    x = exp(cos(sigmas));
+    y = exp(sin(sigmas)); 
+    r = [x; y]
+end
+
+function d = gradSurface(sigma)
+    % Input: sigma(scalar to evaluate the parcial derivative at
+    % output: d -> partial derivatives evaluated at sigma
+    x = -sin(sigma)*exp(cos(sigma));
+    y = cos(sigma)*exp(sin(sigma)); 
+    d = [x; y];
+end
+
+function F = coulomb(sigma1, sigma2)
+    % Input: the positions of two particles
+    % output: F the force between them 
+    c1 = exp(cos(sigma1)); c2 = exp(cos(sigma2));
+    s1 = exp(sin(sigma1)); s2 = exp(sin(sigma2));
+    d = sqrt((c1-c2)^2+(s1-s2)^2);
+    d3 = d^3;
+    
+    F = [c1-c2, s1-s2];
+    F = F/d3;
+end
+
+function y = dots(sigma)
+    % Input: vector of sigmas (size 3)
+    % Output: for each particle in sigma evaluate scalar product between
+    % the force acting on it and the gradient of the surface
+   
+    F1 = coulomb(sigma(1),sigma(2)) + coulomb(sigma(1), sigma(3));
+    F2 = coulomb(sigma(2),sigma(1)) + coulomb(sigma(2), sigma(3));
+    F3 = coulomb(sigma(3),sigma(1)) + coulomb(sigma(3), sigma(2));
+    Dot1 = dot(F1, gradSurface(sigma(1)));
+    Dot2 = dot(F2, gradSurface(sigma(2)));
+    Dot3 = dot(F3, gradSurface(sigma(3)));
+    y = [Dot1; Dot2; Dot3];
+end
+
+
+% Codes from class
+% Code 20: Newtonis method for n-dimensional systems
+% Input: x0 - initial guess (column vector)
+%        tol - tolerance so that ||x_{k+1} - x_{k} || < tol
+%        itmax - max number of iterations
+%        fun - function’s name
+% Output:   XK - iterated
+%           resd: resulting residuals of iteration: ||F_k||
+%           it:   number of required iterations to satisfy tolerance
+function [XK,resd,it] = newtonn(x0,tol,itmax,fun)
+    xk = [x0];
+    resd = [norm(feval(fun,xk))];
+    XK = [x0]; 
+    it = 1;
+    
+    tolk = 1.0; 
+    n = length(x0);
+
+    while it < itmax && tolk > tol
+        Fk = feval(fun, xk);
+
+        DFk = jac(fun, xk); 
+        [P,L,U] = pplu(DFk);
+
+        dxk = plusolve(L,U,P,-Fk);
+
+        xk = xk + dxk; 
+        XK = [XK xk]; 
+        resd = [resd norm(Fk)];
+        tolk = norm(XK(:, end)-XK(:, end-1)); 
+        it = it + 1;
+    end
+end
+
+% Code 13: PA = LU factorization (partial pivoting)
+% Input: A (non-singular square matrix)
+% Output: L (unit lower triangular matrix)
+%         U (upper triangular matrix)
+%         P (reordering vector)
+function [P, L, U] = pplu(A)
+    [m,n] = size(A);
+
+    if m~=n
+           error('not square matrix'); 
+    end
+
+    U = A;
+    L = eye(n);
+
+    P = [1:n]';
+
+    for k = 1:n-1
+        [~, imax] = max(abs(U(k:end,k)));
+        imax = imax+k-1;
+        i1 = [k, imax];
+        i2 = [imax, k];
+        
+        U(i1,:) = U(i2,:); % Column k will be column imax and column imax will be column k
+        P(k) = imax;
+
+        L(i1,1:k-1) = L(i2, 1:k-1);
+
+        for jj = [k+1:n]
+            L(jj, k) = U(jj, k)/U(k, k);
+            U(jj, k:n) = U(jj, k:n) - L(jj, k)*U(k,k:n);
+        end
+    end
+end
+
+% Code 14: PA = LU (Solver for Ax = b)
+% Input:    L (unit lower triangular matrix)
+%           U (upper triangular matrix)
+%           P (reordering vector)
+%           b (right-hand side)
+% Output:   solution x
+function x = plusolve(L, U, P, b)
+    n = length(b);
+    for k = 1:n-1
+        b([k P(k)]) = b([P(k) k]);
+    end
+    y = fs(L, b);
+    x = bs(U, y);
+end
+
+% Code 19: Computation of the Jacobian J
+% Input:   F(x) : R^m REPLACE_WITH_DASH_DASH-> R^n
+%          x : (m x 1)-vector ; F: (n x 1)-vector
+% Output: DF(x) (n x m) Jacobian matrix at x
+function DF = jac(F,x)
+    f1 = feval(F,x); 
+    n = length(f1); 
+    m = length(x);
+    
+    DF = zeros(n,m); 
+    H = sqrt(eps)*eye(m);
+    
+    for j = 1:m
+        f2 = feval(F,x+H(:,j)); 
+        DF(:,j) = (f2 - f1)/H(j,j);
+    end
+end
+
+% Code 12: Backward Substitution for Upper Triangular Systems
+% Input:    U: Upp. Triangular non-singular square matrix
+%           b: column right-hand side
+% Output:   x: solution of Ux=b
+function x = bs(U, b)
+    x = 0*b;
+    n = length(b);
+    x(n) = b(n)/U(n,n);
+
+    for ii = n-1:-1:1
+        x(ii) = (b(ii)-U(ii, ii+1:n)*x(ii+1:n))/U(ii,ii);
+    end
+end
+
+% Code 11: Forward Substitution for Lower Triangular Systems
+% Input:    L: Low Triangular non-singular square matrix
+%           b: column right-hand side
+% Output:   x: solution of Lx=b
+function x = fs(L, b)
+    x = 0*b;
+    n = length(b);
+    x(1) = b(1)/L(1,1);
+
+    for ii = 2:n
+        x(ii) = (b(ii)-L(ii, 1:ii-1)*x(1:ii-1))/L(ii,ii);
+    end
+end
+
+##### SOURCE END #####
+--></body></html>
